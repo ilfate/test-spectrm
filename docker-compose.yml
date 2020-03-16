@@ -1,0 +1,28 @@
+version:  '2'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - '5433:5432'
+  nginx:
+    build: docker/nginx
+    ports:
+      - '81:80'
+    links:
+      - php
+    volumes_from:
+      - php
+    volumes:
+      - ./logs/nginx/:/var/log/nginx:cached
+  php:
+    build:
+      context: ""
+      dockerfile: docker/php/Dockerfile
+    restart: on-failure
+    volumes:
+      - ./:/var/www/symfony:cached
+      - ./logs/symfony:/var/www/symfony/var/logs:cached
+    ports:
+      - '9002:9000'
+    links:
+      - postgres
